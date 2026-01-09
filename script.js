@@ -1,18 +1,6 @@
 $(document).ready(function () {
 
-    const existingLogins = ["admin", "user123", "test", "janek"];
-
-    $.validator.addMethod("loginAvailable", function (value, element) {
-        let isAvailable = true;
-
-        existingLogins.forEach(login => {
-            if (login.toLowerCase() === value.toLowerCase()) {
-                isAvailable = false;
-            }
-        });
-
-        return isAvailable;
-    }, "Taki login już istnieje");
+    const existingUsers = ["admin", "test", "john123"];
 
     $("#formulaz").validate({
         rules: {
@@ -27,7 +15,16 @@ $(document).ready(function () {
             Login: {
                 required: true,
                 minlength: 3,
-                loginAvailable: true
+                loginAvailable: true,
+                remote: {
+                    url: "check-username.json",
+                    type: "post",
+                    dataFilter: function (response) {
+                        const data = JSON.parse(response);
+                        const username = $("#username").val();
+                        return existingUsers.includes(username) ? "false" : "true";
+                    }
+                }
             },
             Haslo: {
                 required: true,
